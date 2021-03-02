@@ -42,26 +42,28 @@ def precipitation():
     #)
     results = session.query(Measurement.date, Measurement.tobs)
     test = list(np.ravel(results))
-    return jsonify(test)
     session.close()
+    return jsonify(test)
+    
 
 # Stations
 @app.route("/api/v1.0/stations")
 def stations():
     session = Session(engine)
+    session.close()
     return (
         f"Welcome to Stations!"
     )
-    session.close()
 
 # Temperatures
 @app.route("/api/v1.0/tobs")
 def temperatures():
     session = Session(engine)
+    session.close()
     return (
         f"Welcome to Temperatures!"
     )
-    session.close()
+    
 
 # Since Date
 # Between Date

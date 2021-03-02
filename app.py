@@ -40,29 +40,51 @@ def precipitation():
     #return (
     #    f"Welcome to the Precipitation!"
     #)
-    results = session.query(Measurement.date, Measurement.tobs)
-    test = list(np.ravel(results))
+    results = session.query(Measurement.date, Measurement.prcp).order_by(Measurement.date).all()
     session.close()
-    return jsonify(test)
+
+    all_results = []
+    for item in results:
+        item_dict = {}
+        item_dict["Date"] = item[0]
+        item_dict["Precipitation (inches)"] = item[1]
+        all_results.append(item_dict)
+
+    return jsonify(all_results)
     
 
 # Stations
 @app.route("/api/v1.0/stations")
 def stations():
     session = Session(engine)
+    results = session.query(Station.station, Station.name).order_by(Station.name).all()
     session.close()
-    return (
-        f"Welcome to Stations!"
-    )
+
+    all_results = []
+    for item in results:
+        item_dict = {}
+        item_dict["Station ID"] = item[0]
+        item_dict["Station Name"] = item[1]
+        all_results.append(item_dict)
+
+    return jsonify(all_results)
 
 # Temperatures
 @app.route("/api/v1.0/tobs")
 def temperatures():
     session = Session(engine)
+    ma = 'USC00519281' # Most Active Station ID from ipynb Analysis
+    results = session.query(Measurement.date, Measurement.tobs).order_by(Measurement.date).filter(Measurement.station == ma).all()
     session.close()
-    return (
-        f"Welcome to Temperatures!"
-    )
+
+    all_results = []
+    for item in results:
+        item_dict = {}
+        item_dict["Date"] = item[0]
+        item_dict["Temperature (°F)"] = item[1]
+        all_results.append(item_dict)
+
+    return jsonify(all_results)
     
 
 # Since Date

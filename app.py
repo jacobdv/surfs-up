@@ -114,7 +114,6 @@ def since_date(start_date):
     elif start_year < 2010 or start_year > 2017:
         return (
             "It looks like that year is outside the range of our data! Try a date between January 2010 and August 2017."
-            "<br>Make sure to include the month and day too!"
         )
     # Checks that the given month is a valid month.
     elif start_month < 1 or start_month > 12:
@@ -183,19 +182,18 @@ def between_dates(start_date,end_date):
     start_month = int(start_date[5:7])
     start_day = int(start_date[8:10])
 
-    end_year = int(start_date[0:4])
-    end_month = int(start_date[5:7])
-    end_day = int(start_date[8:10])
+    end_year = int(end_date[0:4])
+    end_month = int(end_date[5:7])
+    end_day = int(end_date[8:10])
 
     if len(start_date) != 10:
         return (
-            "Hmmm, looks like your date is the wrong length. Remember the format is YYYY-MM-DD!"
+            "Hmmm, looks like your start date is the wrong length. Remember the format is YYYY-MM-DD!"
         )
     # Makes sure the start year is within the range of years in the data.
     elif start_year < 2010 or start_year > 2017:
         return (
             "It looks like that year is outside the range of our data! Try a date between January 2010 and August 2017."
-            "<br>Make sure to include the month and day too!"
         )
     # Checks that the given month is a valid month.
     elif start_month < 1 or start_month > 12:
@@ -227,15 +225,14 @@ def between_dates(start_date,end_date):
 #################################
 
 
-    if len(start_date) != 10:
+    if len(end_date) != 10:
         return (
-            "Hmmm, looks like your date is the wrong length. Remember the format is YYYY-MM-DD!"
+            "Hmmm, looks like your end date is the wrong length. Remember the format is YYYY-MM-DD!"
         )
     # Makes sure the start year is within the range of years in the data.
     elif end_year < 2010 or end_year > 2017:
         return (
             "It looks like that year is outside the range of our data! Try a date between January 2010 and August 2017."
-            "<br>Make sure to include the month and day too!"
         )
     # Checks that the given month is a valid month.
     elif end_month < 1 or end_month > 12:

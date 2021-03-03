@@ -107,24 +107,16 @@ def since_date(start_date):
     start_day = int(start_date[8:10])
 
     if len(start_date) != 10:
-        return (
-            "Hmmm, looks like your date is the wrong length. Remember the format is YYYY-MM-DD!"
-        )
+        return ("Hmmm, looks like your date is the wrong length. Remember the format is YYYY-MM-DD!")
     # Makes sure the start year is within the range of years in the data.
     elif start_year < 2010 or start_year > 2017:
-        return (
-            "It looks like that year is outside the range of our data! Try a date between January 2010 and August 2017."
-        )
+        return ("It looks like that year is outside the range of our data! Try a date between January 2010 and August 2017.")
     # Checks that the given month is a valid month.
     elif start_month < 1 or start_month > 12:
-        return (
-            "Hmmm. Make sure you're entering a valid month. Remember the format is YYYY-MM-DD!"
-        )
+        return ("Hmmm. Make sure you're entering a valid month. Remember the format is YYYY-MM-DD!")
     # Checks that the given day is greater than 1.
     elif start_day < 1:
-        return (
-            "Hmmm. Make sure you're entering a valid day. Remember the format is YYYY-MM-DD!"
-        )
+        return ("Hmmm. Make sure you're entering a valid day. Remember the format is YYYY-MM-DD!")
     # Clears day values for February, accounting for Leap Years in 2012 and 2016.
     elif start_month == 2:
         if start_day == 29:
@@ -163,9 +155,7 @@ def since_date(start_date):
 
     # Reminds user of proper date format if there is a value error, though this should be difficult with the above error handling.
     except ValueError:
-        return (
-            f"It appears you haven't entered a valid date. Please use YYYY-MM-DD format. Thanks!"
-        )
+        return ("It appears you haven't entered a valid date. Please use YYYY-MM-DD format. Thanks!")
 
     # Returns temperature data since the given start date.
     return (
@@ -187,24 +177,16 @@ def between_dates(start_date,end_date):
     end_day = int(end_date[8:10])
 
     if len(start_date) != 10:
-        return (
-            "Hmmm, looks like your start date is the wrong length. Remember the format is YYYY-MM-DD!"
-        )
+        return ("Hmmm, looks like your start date is the wrong length. Remember the format is YYYY-MM-DD!")
     # Makes sure the start year is within the range of years in the data.
     elif start_year < 2010 or start_year > 2017:
-        return (
-            "It looks like that year is outside the range of our data! Try a date between January 2010 and August 2017."
-        )
+        return ("It looks like that year is outside the range of our data! Try a date between January 2010 and August 2017.")
     # Checks that the given month is a valid month.
     elif start_month < 1 or start_month > 12:
-        return (
-            "Hmmm. Make sure you're entering a valid month. Remember the format is YYYY-MM-DD!"
-        )
+        return ("Hmmm. Make sure you're entering a valid month. Remember the format is YYYY-MM-DD!")
     # Checks that the given day is greater than 1.
     elif start_day < 1:
-        return (
-            "Hmmm. Make sure you're entering a valid day. Remember the format is YYYY-MM-DD!"
-        )
+        return ("Hmmm. Make sure you're entering a valid day. Remember the format is YYYY-MM-DD!")
     # Clears day values for February, accounting for Leap Years in 2012 and 2016.
     elif start_month == 2:
         if start_day == 29:
@@ -226,24 +208,16 @@ def between_dates(start_date,end_date):
 
 
     if len(end_date) != 10:
-        return (
-            "Hmmm, looks like your end date is the wrong length. Remember the format is YYYY-MM-DD!"
-        )
+        return ("Hmmm, looks like your end date is the wrong length. Remember the format is YYYY-MM-DD!")
     # Makes sure the start year is within the range of years in the data.
     elif end_year < 2010 or end_year > 2017:
-        return (
-            "It looks like that year is outside the range of our data! Try a date between January 2010 and August 2017."
-        )
+        return ("It looks like that year is outside the range of our data! Try a date between January 2010 and August 2017.")
     # Checks that the given month is a valid month.
     elif end_month < 1 or end_month > 12:
-        return (
-            "Hmmm. Make sure you're entering a valid month. Remember the format is YYYY-MM-DD!"
-        )
+        return ("Hmmm. Make sure you're entering a valid month. Remember the format is YYYY-MM-DD!")
     # Checks that the given day is greater than 1.
     elif end_day < 1:
-        return (
-            "Hmmm. Make sure you're entering a valid day. Remember the format is YYYY-MM-DD!"
-        )
+        return ("Hmmm. Make sure you're entering a valid day. Remember the format is YYYY-MM-DD!")
     # Clears day values for February, accounting for Leap Years in 2012 and 2016.
     elif end_month == 2:
         if end_day == 29:
@@ -281,13 +255,9 @@ def between_dates(start_date,end_date):
         if (int(start_date[0:4]) > int(end_date[0:4])) or\
         ((start_date[0:4] == end_date[0:4]) and (int(start_date[5:7]) > int(end_date[5:7]))) or\
         ((start_date[0:7] == end_date[0:7]) and (int(start_date[8:10]) > int(end_date[8:10]))):
-            return (
-                "Make sure your end date is after your start date. Remember the format is YYYY-MM-DD!"
-            )
+            return ("Make sure your end date is after your start date. Remember the format is YYYY-MM-DD!")
         else:
-            return (
-                f"It appears you haven't entered a valid date. Please use YYYY-MM-DD format. Thanks!"
-            )
+            return ("It appears you haven't entered a valid date. Please use YYYY-MM-DD format. Thanks!")
     return (
         f"<u>Temperature Data Between {start_date} and {end_date}</u>"
         f"</br>Max Temperature:    {max_temp}°F"

@@ -93,7 +93,7 @@ def temperatures():
         all_results.append(item_dict)
 
     return jsonify(all_results)
-    
+
 ############################################### 
 # Dynamic Routes 
 ###############################################
@@ -102,33 +102,46 @@ def temperatures():
 def since_date(start_date):
     # Error Handling - Making sure dates are within proper ranges for year, month and day.
     # Makes sure the start date is the right length.
+    start_year = int(start_date[0:4])
+    start_month = int(start_date[5:7])
+    start_day = int(start_date[8:10])
+
     if len(start_date) != 10:
         return (
             "Hmmm, looks like your date is the wrong length. Remember the format is YYYY-MM-DD!"
         )
     # Makes sure the start year is within the range of years in the data.
-    elif int(start_date[0:4]) < 2010 or int(start_date[0:4]) > 2017:
+    elif start_year < 2010 or start_year > 2017:
         return (
             "It looks like that year is outside the range of our data! Try a date between January 2010 and August 2017."
             "<br>Make sure to include the month and day too!"
         )
     # Checks that the given month is a valid month.
-    elif int(start_date[5:7]) < 1 or int(start_date[5:7]) > 12:
+    elif start_month < 1 or start_month > 12:
         return (
             "Hmmm. Make sure you're entering a valid month. Remember the format is YYYY-MM-DD!"
         )
     # Checks that the given day is greater than 1.
-    elif int(start_date[8:10]) < 1:
+    elif start_day < 1:
         return (
             "Hmmm. Make sure you're entering a valid day. Remember the format is YYYY-MM-DD!"
         )
     # Clears day values for February, accounting for Leap Years in 2012 and 2016.
-    elif start_date[5:7] == '02':
-        if int(start_date[8:10]) == 29:
-            if int(start_date[0:4]) != 2012 and int(start_date[0:4]) != 2016:  
+    elif start_month == 2:
+        if start_day == 29:
+            if start_year != 2012 and start_year != 2016:  
                 return ("This isn't a Leap Year. Make sure you're using YYYY-MM-DD!")
-        elif int(start_date[8:10]) > 29:
+        elif start_day > 29:
             return ("This isn't a valid day in February in any year! Make sure you're using YYYY-MM-DD!")
+    # Clears day values for months with 30 days. (04,06,09,11)
+    elif start_month == 4 or start_month == 6 or start_month == 9 or start_month == 11:
+        if start_day > 30:
+            return ("That isn't a valid day for this month. Make sure you're using YYYY-MM-DD!")
+    elif start_day > 31:
+        return ("That isn't a valid date in any month. Make sure you're using YYYY-MM-DD!")
+    # Deals with the fact that the dataset ends halfway through 2017.
+    elif start_year == 2017 and ((start_month == 8 and start_day > 23) or start_month > 8):
+        return ("Sorry. The last day of data in this dataset is August 23rd, 2017.")
 
     # Runs standard query.
     try:
@@ -166,23 +179,92 @@ def since_date(start_date):
 # Between Date
 @app.route("/api/v1.0/<start_date>/<end_date>")
 def between_dates(start_date,end_date):
-    if len(start_date) != 10 or len(end_date != 10):
+    start_year = int(start_date[0:4])
+    start_month = int(start_date[5:7])
+    start_day = int(start_date[8:10])
+
+    end_year = int(start_date[0:4])
+    end_month = int(start_date[5:7])
+    end_day = int(start_date[8:10])
+
+    if len(start_date) != 10:
         return (
-            "Hmmm, looks like one of your dates is the wrong length. Remember the format is YYYY-MM-DD!"
+            "Hmmm, looks like your date is the wrong length. Remember the format is YYYY-MM-DD!"
         )
-    elif int(start_date[0:4]) < 2010 or int(start_date[0:4]) > 2017 or int(end_date[0:4]) < 2010 or int(end_date[0:4]) > 2017:
+    # Makes sure the start year is within the range of years in the data.
+    elif start_year < 2010 or start_year > 2017:
         return (
             "It looks like that year is outside the range of our data! Try a date between January 2010 and August 2017."
             "<br>Make sure to include the month and day too!"
         )
-    elif int(start_date[5:7]) < 1 or int(start_date[5:7]) > 12 or int(end_date[5:7]) < 1 or int(end_date[5:7]) > 12:
+    # Checks that the given month is a valid month.
+    elif start_month < 1 or start_month > 12:
         return (
             "Hmmm. Make sure you're entering a valid month. Remember the format is YYYY-MM-DD!"
         )
-    elif int(start_date[8:10]) < 1 or int(start_date[8:10]) > 31 or int(end_date[8:10]) < 1 or int(end_date[8:10]) > 31:
+    # Checks that the given day is greater than 1.
+    elif start_day < 1:
         return (
             "Hmmm. Make sure you're entering a valid day. Remember the format is YYYY-MM-DD!"
         )
+    # Clears day values for February, accounting for Leap Years in 2012 and 2016.
+    elif start_month == 2:
+        if start_day == 29:
+            if start_year != 2012 and start_year != 2016:  
+                return ("This isn't a Leap Year. Make sure you're using YYYY-MM-DD!")
+        elif start_day > 29:
+            return ("This isn't a valid day in February in any year! Make sure you're using YYYY-MM-DD!")
+    # Clears day values for months with 30 days. (04,06,09,11)
+    elif start_month == 4 or start_month == 6 or start_month == 9 or start_month == 11:
+        if start_day > 30:
+            return ("That isn't a valid day for this month. Make sure you're using YYYY-MM-DD!")
+    elif start_day > 31:
+        return ("That isn't a valid date in any month. Make sure you're using YYYY-MM-DD!")
+    # Deals with the fact that the dataset ends halfway through 2017.
+    elif start_year == 2017 and ((start_month == 8 and start_day > 23) or start_month > 8):
+        return ("Sorry. The last day of data in this dataset is August 23rd, 2017.")
+
+#################################
+
+
+    if len(start_date) != 10:
+        return (
+            "Hmmm, looks like your date is the wrong length. Remember the format is YYYY-MM-DD!"
+        )
+    # Makes sure the start year is within the range of years in the data.
+    elif end_year < 2010 or end_year > 2017:
+        return (
+            "It looks like that year is outside the range of our data! Try a date between January 2010 and August 2017."
+            "<br>Make sure to include the month and day too!"
+        )
+    # Checks that the given month is a valid month.
+    elif end_month < 1 or end_month > 12:
+        return (
+            "Hmmm. Make sure you're entering a valid month. Remember the format is YYYY-MM-DD!"
+        )
+    # Checks that the given day is greater than 1.
+    elif end_day < 1:
+        return (
+            "Hmmm. Make sure you're entering a valid day. Remember the format is YYYY-MM-DD!"
+        )
+    # Clears day values for February, accounting for Leap Years in 2012 and 2016.
+    elif end_month == 2:
+        if end_day == 29:
+            if end_year != 2012 and end_year != 2016:  
+                return ("This isn't a Leap Year. Make sure you're using YYYY-MM-DD!")
+        elif end_day > 29:
+            return ("This isn't a valid day in February in any year! Make sure you're using YYYY-MM-DD!")
+    # Clears day values for months with 30 days. (04,06,09,11)
+    elif end_month == 4 or end_month == 6 or end_month == 9 or end_month == 11:
+        if end_day > 30:
+            return ("That isn't a valid day for this month. Make sure you're using YYYY-MM-DD!")
+    elif end_day > 31:
+        return ("That isn't a valid date in any month. Make sure you're using YYYY-MM-DD!")
+    # Deals with the fact that the dataset ends halfway through 2017.
+    elif end_year == 2017 and ((end_month == 8 and end_day > 23) or end_month > 8):
+        return ("Sorry. The last day of data in this dataset is August 23rd, 2017.")
+##################################
+
     try:
         session = Session(engine)
         results = session.query(Measurement.tobs).\

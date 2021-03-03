@@ -32,8 +32,8 @@ def homepage():
         f"<ol><a href='/api/v1.0/stations'>Stations (/api/v1.0/stations)</a></ol>"
         f"<ol><a href='/api/v1.0/tobs'>Temperatures (/api/v1.0/tobs)</a></ol>"
         f"</br></br>User Input Required (Format: YYYY-MM-DD)"
-        f"<ol><a href='/api/v1.0/2010-01-01'>Since Date (/api/v1.0/startdate)</a></ol>"
-        #f"<ol><a href='/api/v1.0/<start>/<end>'>Between Dates (/api/v1.0/startdate/enddate)</a></ol>"
+        f"<ol><a href='/api/v1.0/2010-01-01'>Since Date (/api/v1.0/start_date)</a></ol>"
+        f"<ol><a href='/api/v1.0/2010-01-01/2017-08-23'>Between Dates (/api/v1.0/start_date/end_date)</a></ol>"
     )
 
 # Precipitation
@@ -117,23 +117,100 @@ def temperatures():
 # Since Date
 @app.route("/api/v1.0/<start_date>")
 def since_date(start_date):
-    session = Session(engine)
-    results = session.query(min(Measurement.tobs),max(Measurement.tobs)).\
-        filter(Measurement.date >= start_date).order_by(Measurement.date).all()
-    session.close()
-    
-    all_results = []
-    for item in results:
-        item_dict = {}
-        # Look for min max and average in for loop??????????????
-        item_dict["Min Temperature (°F)"] = item[0]
-        item_dict["Max Temperature (°F)"] = item[1]
-        #item_dict["Average Temperature (°F)"] = item[2]
-        all_results.append(item_dict)
+    if len(start_date) != 10:
+        return (
+            "Hmmm, looks like your date is the wrong length. Remember the format is YYYY-MM-DD!"
+        )
+    elif int(start_date[0:4]) < 2010 or int(start_date[0:4]) > 2017:
+        return (
+            "It looks like that year is outside the range of our data! Try a date between January 2010 and August 2017."
+            "<br>Make sure to include the month and day too!"
+        )
+    elif int(start_date[5:7]) < 1 or int(start_date[5:7]) > 12:
+        return (
+            "Hmmm. Make sure you're entering a valid month. Remember the format is YYYY-MM-DD!"
+        )
+    elif int(start_date[8:10]) < 1 or int(start_date[8:10]) > 31:
+        return (
+            "Hmmm. Make sure you're entering a valid day. Remember the format is YYYY-MM-DD!"
+        )
+    try:
+        session = Session(engine)
+        results = session.query(Measurement.tobs).\
+            filter(Measurement.date >= start_date).order_by(Measurement.date).all()
+        session.close()
 
-    return jsonify(all_results)
+        temp_list = []
+        for x in results:
+            if x[0] != 'Null':
+                temp_list.append(float(x[0]))
+
+        max_temp = max(temp_list)
+        min_temp = min(temp_list)
+        avg_temp = round(st.mean(temp_list),1)
+    except ValueError:
+        return (
+            f"It appears you haven't entered a valid date. Please use YYYY-MM-DD format. Thanks!"
+        )
+    return (
+        f"<u>Temperature Data Since {start_date}</u>"
+        f"</br>Max Temperature:    {max_temp}°F"
+        f"</br>Min Temperature:    {min_temp}°F"
+        f"</br>Average Temperature:    {avg_temp}°F"
+    )
 
 # Between Date
+@app.route("/api/v1.0/<start_date>/<end_date>")
+def between_dates(start_date,end_date):
+    if len(start_date) != 10 or len(end_date != 10):
+        return (
+            "Hmmm, looks like one of your dates is the wrong length. Remember the format is YYYY-MM-DD!"
+        )
+    elif int(start_date[0:4]) < 2010 or int(start_date[0:4]) > 2017 or int(end_date[0:4]) < 2010 or int(end_date[0:4]) > 2017:
+        return (
+            "It looks like that year is outside the range of our data! Try a date between January 2010 and August 2017."
+            "<br>Make sure to include the month and day too!"
+        )
+    elif int(start_date[5:7]) < 1 or int(start_date[5:7]) > 12 or int(end_date[5:7]) < 1 or int(end_date[5:7]) > 12:
+        return (
+            "Hmmm. Make sure you're entering a valid month. Remember the format is YYYY-MM-DD!"
+        )
+    elif int(start_date[8:10]) < 1 or int(start_date[8:10]) > 31 or int(end_date[8:10]) < 1 or int(end_date[8:10]) > 31:
+        return (
+            "Hmmm. Make sure you're entering a valid day. Remember the format is YYYY-MM-DD!"
+        )
+    try:
+        session = Session(engine)
+        results = session.query(Measurement.tobs).\
+            filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).\
+                order_by(Measurement.date).all()
+        session.close()
+
+        temp_list = []
+        for x in results:
+            if x[0] != 'Null':
+                temp_list.append(float(x[0]))
+
+        max_temp = max(temp_list)
+        min_temp = min(temp_list)
+        avg_temp = round(st.mean(temp_list),1)
+    except ValueError:
+        if (int(start_date[0:4]) > int(end_date[0:4])) or\
+        ((start_date[0:4] == end_date[0:4]) and (int(start_date[5:7]) > int(end_date[5:7]))) or\
+        ((start_date[0:7] == end_date[0:7]) and (int(start_date[8:10]) > int(end_date[8:10]))):
+            return (
+                "Make sure your end date is after your start date. Remember the format is YYYY-MM-DD!"
+            )
+        else:
+            return (
+                f"It appears you haven't entered a valid date. Please use YYYY-MM-DD format. Thanks!"
+            )
+    return (
+        f"<u>Temperature Data Between {start_date} and {end_date}</u>"
+        f"</br>Max Temperature:    {max_temp}°F"
+        f"</br>Min Temperature:    {min_temp}°F"
+        f"</br>Average Temperature:    {avg_temp}°F"
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
